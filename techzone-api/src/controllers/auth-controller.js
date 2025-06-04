@@ -1,13 +1,11 @@
-import { users } from "../models/user-model.js";
 import jwt from "jsonwebtoken";
+import { User } from "../models/user-model.js";
 
-export const login = (req, res) => {
+export const login = async (req, res) => {
   const body = req.body;
   const { email, password } = body;
 
-  const user = users.find(
-    (user) => user.email === email && user.password === password
-  );
+  const user = await User.findOne({ email, password });
 
   if (!user) {
     res.status(401).json({ message: "Email ou palavra-passe incorreto." });

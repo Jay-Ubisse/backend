@@ -1,6 +1,7 @@
 import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
+import mongoose from "mongoose";
 
 import { userRoute } from "./routes/user-routes.js";
 import { authRoute } from "./routes/auth-routes.js";
@@ -15,5 +16,12 @@ const port = process.env.PORT;
 
 app.use("/users", userRoute);
 app.use("/auth", authRoute);
+
+mongoose
+  .connect(process.env.BD_URI)
+  .then(() => console.log("BD conectado com sucesso!"))
+  .catch((error) =>
+    console.log("Ocorreu um erro ao contectar com a DB: ", error)
+  );
 
 app.listen(port, () => console.log(`Server running on ${host}:${port}`));

@@ -1,20 +1,16 @@
-import { users } from "../models/user-model.js";
+import { User } from "../models/user-model.js";
 
-export const getAllUsers = (req, res) => {
-  const u = users.map((user) => {
-    const { password, ...rest } = user;
+export const getAllUsers = async (req, res) => {
+  const users = await User.find();
 
-    return rest;
-  });
-
-  res.status(200).json({ message: "ok", users: u });
+  res.status(200).json({ message: "ok", users });
 };
 
-export const createUser = (req, res) => {
+export const createUser = async (req, res) => {
   const body = req.body;
   const { name, email, password } = body;
 
-  const existingUser = users.find((user) => user.email === email);
+  const existingUser = await User.findOne({ email });
 
   if (existingUser) {
     res
@@ -22,24 +18,19 @@ export const createUser = (req, res) => {
       .json({ message: "Já existe um usuário cadastrado com este email." });
   }
 
-  const usersLength = users.length;
-
-  const user = {
-    id: usersLength + 1,
-    name,
+  const user = await User.create({
     email,
+    name,
     password,
-  };
-
-  users.push(user);
+  });
 
   res.status(201).json({ message: "Usuário criado com sucesso", user });
 };
 
-export const getUser = (req, res) => {
+export const getUser = async (req, res) => {
   const id = req.params.id;
 
-  const existingUser = users.find((user) => user.id === Number(id));
+  const existingUser = await User.findById(id);
 
   if (!existingUser) {
     res.json({ message: "Usuário não encontrado" });
@@ -48,35 +39,30 @@ export const getUser = (req, res) => {
   res.status(200).json({ message: "ok", existingUser });
 };
 
-export const updateUser = (req, res) => {
+export const updateUser = async (req, res) => {
   const id = req.params.id;
   const body = req.body;
   const { name, email, password } = body;
 
-  const user = users.find((user) => user.id === Number(id));
+  const existingUser = await User.findById(id);
 
-  if (!user) {
+  if (!existingUser) {
     res.json({ message: "Usuário não encontrado" });
   }
 
-  user.email = email;
-  user.name = name;
-  user.password = password;
+  const user = await User.updateOne({ id }, { name, email, password });
 
   res.status(200).json({ message: "Usuário actualizado com sucesso", user });
 };
 
-export const deleteUser = (req, res) => {
+export const deleteUser = async (req, res) => {
   const id = req.params.id;
 
-  const user = users.find((user) => user.id === Number(id));
+  const user = await User.deleteOne({ id });
 
   if (!user) {
     res.json({ message: "Usuário não encontrado" });
   }
-
-  const index = users.indexOf(user);
-  users.splice(index, 1);
 
   res
     .status(200)
