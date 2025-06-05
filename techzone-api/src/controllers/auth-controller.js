@@ -1,13 +1,16 @@
 import jwt from "jsonwebtoken";
+import bcrypt from "bcrypt";
 import { User } from "../models/user-model.js";
 
 export const login = async (req, res) => {
   const body = req.body;
   const { email, password } = body;
 
-  const user = await User.findOne({ email, password });
+  const user = await User.findOne({ email });
 
-  if (!user) {
+  const isEqual = await bcrypt.compare(password, user.password);
+
+  if (!user || !isEqual) {
     res.status(401).json({ message: "Email ou palavra-passe incorreto." });
   }
 
