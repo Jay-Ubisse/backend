@@ -5,6 +5,9 @@ import mongoose from "mongoose";
 
 import { userRoute } from "./routes/user-routes.js";
 import { authRoute } from "./routes/auth-routes.js";
+import { meRoute } from "./routes/user-routes.js";
+import { categoryRoute } from "./routes/category-routes.js";
+import { productRoute } from "./routes/product-routes.js";
 
 const app = express();
 dotenv.config();
@@ -16,6 +19,9 @@ const port = process.env.PORT;
 
 app.use("/users", userRoute);
 app.use("/auth", authRoute);
+app.use("/", meRoute);
+app.use("/categories", categoryRoute);
+app.use("/products", productRoute);
 
 mongoose
   .connect(process.env.BD_URI)

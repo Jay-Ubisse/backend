@@ -112,3 +112,8 @@ export const deleteUser = async (req, res) => {
       .json({ message: "Ocorreu um erro interno no servidor", error });
   }
 };
+
+export const getMe = async (req, res) => {
+  const autheticatedUser = req.user;
+  res.status(200).json({ msg: "ok", autheticatedUser });
+};
